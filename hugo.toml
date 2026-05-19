@@ -1,7 +1,6 @@
 baseURL = "https://luweicao.pages.dev/"
 languageCode = "zh-cn"
 title = "芦苇草"
-theme = ""
 defaultContentLanguage = "zh-cn"
 summaryLength = 120
 paginate = 10
