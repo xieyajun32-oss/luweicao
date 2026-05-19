@@ -1,0 +1,33 @@
+{{ define "main" }}
+<div class="hero">
+  <h1>你好，我是芦苇草</h1>
+  <p>记录 AI 工具实践、港股投研、项目管理与个人成长。</p>
+</div>
+
+{{ $posts := where .Site.RegularPages "Section" "posts" }}
+{{ if $posts }}
+<div class="section-title">最新文章</div>
+<ul class="post-list">
+  {{ range first 5 $posts }}
+  <li class="post-item">
+    <a href="{{ .Permalink }}">{{ .Title }}</a>
+    <div class="post-meta">{{ .Date.Format "2006-01-02" }}</div>
+    {{ if .Summary }}<div class="post-summary">{{ .Summary | plainify | truncate 100 }}</div>{{ end }}
+  </li>
+  {{ end }}
+</ul>
+{{ end }}
+
+{{ $research := where .Site.RegularPages "Section" "research" }}
+{{ if $research }}
+<div class="section-title" style="margin-top:3rem;">最新投研</div>
+<ul class="post-list">
+  {{ range first 3 $research }}
+  <li class="post-item">
+    <a href="{{ .Permalink }}">{{ .Title }}</a>
+    <div class="post-meta">{{ .Date.Format "2006-01-02" }}</div>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}
+{{ end }}

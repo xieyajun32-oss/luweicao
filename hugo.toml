@@ -1,0 +1,41 @@
+baseURL = "https://luweicao.pages.dev/"
+languageCode = "zh-cn"
+title = "芦苇草"
+theme = ""
+defaultContentLanguage = "zh-cn"
+summaryLength = 120
+paginate = 10
+
+[params]
+  author = "芦苇草"
+  description = "AI工具 · 港股投研 · 项目管理 · 个人成长"
+  dateFormat = "2006-01-02"
+
+[menu]
+  [[menu.main]]
+    name = "首页"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "文章"
+    url = "/posts/"
+    weight = 2
+  [[menu.main]]
+    name = "投研"
+    url = "/research/"
+    weight = 3
+  [[menu.main]]
+    name = "项目"
+    url = "/projects/"
+    weight = 4
+  [[menu.main]]
+    name = "关于"
+    url = "/about/"
+    weight = 5
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "dracula"
