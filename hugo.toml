@@ -1,4 +1,4 @@
-baseURL = "https://luweicao.pages.dev/"
+baseURL = "https://luweicao.net/"
 languageCode = "zh-cn"
 title = "芦苇草"
 defaultContentLanguage = "zh-cn"
@@ -28,9 +28,13 @@ paginate = 10
     url = "/projects/"
     weight = 4
   [[menu.main]]
+    name = "港股后台"
+    url = "https://hkipo-admin.pages.dev/admin/"
+    weight = 5
+  [[menu.main]]
     name = "关于"
     url = "/about/"
-    weight = 5
+    weight = 6
 
 [markup]
   [markup.goldmark]
