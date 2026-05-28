@@ -5,6 +5,10 @@
   --muted: #6b7280;
   --border: #e5e7eb;
   --code-bg: #f3f4f6;
+  --danger: #b42318;
+  --danger-bg: #fff1f0;
+  --note-bg: #f8fafc;
+  --note-border: #cbd5e1;
   --max-width: 720px;
 }
 
@@ -101,6 +105,33 @@ a { color: var(--accent); }
 .article-header { margin-bottom: 2rem; }
 .article-header h1 { margin-bottom: 0.5rem; }
 .article-content { line-height: 1.9; }
+.article-content strong { color: #111827; font-weight: 700; }
+.article-content .red {
+  color: var(--danger);
+  font-weight: 700;
+}
+.article-content .decision-box,
+.article-content .risk-box,
+.article-content .note-box {
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  margin: 1.5rem 0;
+  border: 1px solid var(--note-border);
+  background: var(--note-bg);
+}
+.article-content .risk-box {
+  border-color: #fecaca;
+  background: var(--danger-bg);
+}
+.article-content .decision-box {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+.article-content .decision-box p:last-child,
+.article-content .risk-box p:last-child,
+.article-content .note-box p:last-child {
+  margin-bottom: 0;
+}
 .article-content img { max-width: 100%; border-radius: 4px; margin: 1rem 0; }
 .article-content blockquote {
   border-left: 3px solid var(--border);
