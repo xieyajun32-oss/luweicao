@@ -109,6 +109,15 @@ a { color: var(--accent); }
 .article-content .red {
   color: var(--danger);
   font-weight: 700;
+  color: var(--danger) !important;
+}
+.article-content .red-line {
+  color: var(--danger) !important;
+  font-weight: 700;
+}
+.article-content .decision-box .red-line,
+.article-content .decision-box .red {
+  color: var(--danger) !important;
 }
 .article-content .decision-box,
 .article-content .risk-box,
