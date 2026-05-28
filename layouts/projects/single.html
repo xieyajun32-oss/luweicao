@@ -1,0 +1,53 @@
+{{ define "main" }}
+<article class="ipo-detail">
+  <div class="ipo-detail-head">
+    <h1>{{ .Title }} <span class="ipo-code">（{{ .Params.stock_code }}）</span></h1>
+    <div class="ipo-meta-row">
+      <span class="ipo-ind">{{ .Params.industry }}</span>
+      {{ with .Params.status }}<span class="card-badge badge-{{ . }}">{{ . }}</span>{{ end }}
+    </div>
+  </div>
+
+  <section class="ipo-section">
+    <table class="ipo-table">
+      <tr><td>市值</td><td>{{ .Params.market_cap }}</td></tr>
+      <tr><td>募资规模</td><td>{{ .Params.fundraise }}</td></tr>
+      <tr><td>发行占比</td><td>{{ .Params.issue_ratio }}</td></tr>
+      <tr><td>回拨机制</td><td>{{ .Params.callback }}</td></tr>
+      <tr><td>超额配售权</td><td>{{ .Params.greenshoe }}</td></tr>
+      <tr><td>保荐人</td><td>{{ .Params.sponsor }}</td></tr>
+      {{ if .Params.cornerstone_detail }}
+      <tr><td>基石投资者</td><td>{{ .Params.cornerstone }}（{{ .Params.cornerstone_detail }}）</td></tr>
+      {{ else }}
+      <tr><td>基石投资者</td><td>{{ .Params.cornerstone | default "无" }}</td></tr>
+      {{ end }}
+    </table>
+  </section>
+
+  <section class="ipo-section">
+    <h3>入场费 &amp; 发行结构</h3>
+    <table class="ipo-table">
+      <tr><td>发行价</td><td>HK$ {{ .Params.price }}</td></tr>
+      <tr><td>每手</td><td>{{ .Params.lot_size }} 股</td></tr>
+      <tr><td>一手入场费</td><td>HK$ {{ .Params.entry_fee }}</td></tr>
+      <tr><td>甲尾</td><td>{{ .Params.jia_tail }}</td></tr>
+      <tr><td>乙头</td><td>{{ .Params.yi_head }}</td></tr>
+      <tr><td>全球发售</td><td>{{ .Params.total_shares }}</td></tr>
+      <tr><td>香港公开发售</td><td>{{ .Params.hk_public }}</td></tr>
+    </table>
+  </section>
+
+  {{ with .Params.prospectus }}
+  <p class="ipo-link"><a href="{{ . }}" target="_blank">📄 查看招股书 →</a></p>
+  {{ end }}
+
+  {{ if .Content }}
+  <section class="ipo-section ipo-body">
+    <h3>业务 &amp; 分析</h3>
+    {{ .Content }}
+  </section>
+  {{ end }}
+
+  <nav class="ipo-back"><a href="/projects/">← 返回港股简报</a></nav>
+</article>
+{{ end }}

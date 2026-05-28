@@ -1,0 +1,29 @@
+{{ define "main" }}
+<div class="brief-header">
+  <h1>港股简报</h1>
+  <p class="brief-desc">IPO 打新速览 · 共 {{ len .Pages }} 只</p>
+</div>
+
+<div class="brief-grid">
+  {{ range .Pages.ByDate.Reverse }}
+  <a href="{{ .Permalink }}" class="brief-card">
+    <div class="card-top">
+      <span class="card-code">{{ .Params.stock_code }}</span>
+      {{ with .Params.status }}<span class="card-badge badge-{{ . }}">{{ . }}</span>{{ end }}
+    </div>
+    <h2 class="card-name">{{ .Title }}</h2>
+    <p class="card-ind">{{ .Params.industry }}</p>
+    <div class="card-grid">
+      <div class="card-kv"><span class="kv-k">市值</span><span class="kv-v">{{ .Params.market_cap }}</span></div>
+      <div class="card-kv"><span class="kv-k">募资</span><span class="kv-v">{{ .Params.fundraise }}</span></div>
+      <div class="card-kv"><span class="kv-k">入场费</span><span class="kv-v">{{ .Params.entry_fee }}</span></div>
+      <div class="card-kv"><span class="kv-k">基石</span><span class="kv-v">{{ .Params.cornerstone | default "无" }}</span></div>
+    </div>
+    <div class="card-bot">
+      <span>{{ .Params.sponsor }}</span>
+      <span>{{ .Date.Format "01-02" }}</span>
+    </div>
+  </a>
+  {{ end }}
+</div>
+{{ end }}

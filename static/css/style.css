@@ -163,91 +163,76 @@ a { color: var(--accent); }
 }
 .article-content pre code { background: none; padding: 0; }
 
-.lead {
-  color: var(--muted);
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
-}
+/* ========== 港股简报 - 卡片列表 ========== */
+.brief-header { margin-bottom: 1.5rem; }
+.brief-header h1 { margin-bottom: 0.25rem; }
+.brief-desc { color: var(--muted); font-size: 0.9rem; }
 
-.ipo-brief-list {
+.brief-grid {
   display: grid;
-  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
 }
 
-.ipo-brief-card {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: #fff;
-  padding: 1.25rem;
-}
-
-.ipo-brief-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-}
-
-.ipo-brief-head h2 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
-.ipo-brief-head h2 span {
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.ipo-brief-head p {
-  margin: 0.15rem 0 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.ipo-brief-head a {
-  flex: 0 0 auto;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.15rem 0.65rem;
+.brief-card {
+  display: block;
   text-decoration: none;
-  font-size: 0.85rem;
-}
-
-.ipo-brief-table {
-  display: grid;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: 1rem;
-}
-
-.ipo-brief-table > div {
-  display: grid;
-  grid-template-columns: 7rem minmax(0, 1fr);
-  border-bottom: 1px solid var(--border);
-}
-
-.ipo-brief-table > div:last-child {
-  border-bottom: none;
-}
-
-.ipo-brief-table strong,
-.ipo-brief-table span {
-  padding: 0.55rem 0.75rem;
-  font-size: 0.92rem;
-  line-height: 1.65;
-}
-
-.ipo-brief-table strong {
-  color: var(--muted);
-  background: #f8fafc;
-}
-
-.ipo-brief-table span {
   color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+.brief-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+.card-code { font-size: 0.75rem; font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+.card-badge { font-size: 0.68rem; padding: 0.12em 0.55em; border-radius: 99px; font-weight: 500; }
+.badge-招股中 { background: #dcfce7; color: #166534; }
+.badge-已上市 { background: #f3f4f6; color: #4b5563; }
+.badge-暗盘 { background: #fef9c3; color: #854d0e; }
+
+.card-name { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.1rem; }
+.card-ind { font-size: 0.78rem; color: var(--muted); margin: 0 0 0.7rem; }
+
+.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 0.7rem; }
+.card-kv { display: flex; flex-direction: column; }
+.kv-k { font-size: 0.68rem; color: var(--muted); }
+.kv-v { font-size: 0.82rem; font-weight: 600; margin-top: 0.05rem; }
+
+.card-bot {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.72rem; color: var(--muted);
+  border-top: 1px solid var(--border); padding-top: 0.5rem;
+}
+
+/* ========== 港股简报 - 详情页 ========== */
+.ipo-detail-head { margin-bottom: 1.75rem; }
+.ipo-detail-head h1 { margin-bottom: 0.2rem; }
+.ipo-code { font-size: 0.85rem; font-weight: 400; color: var(--muted); }
+.ipo-meta-row { display: flex; align-items: center; gap: 0.6rem; }
+.ipo-ind { color: var(--muted); font-size: 0.9rem; }
+
+.ipo-section { margin-bottom: 2rem; }
+.ipo-section h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+
+.ipo-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.ipo-table td { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.ipo-table td:first-child { color: var(--muted); width: 110px; white-space: nowrap; }
+
+.ipo-link { margin: 1.5rem 0; }
+.ipo-link a { text-decoration: none; font-weight: 500; }
+
+.ipo-body { line-height: 1.85; }
+.ipo-body h3 { margin-bottom: 0.75rem; }
+
+.ipo-back { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.ipo-back a { text-decoration: none; color: var(--muted); font-size: 0.88rem; }
+.ipo-back a:hover { color: var(--text); }
 
 /* Footer */
 footer {
@@ -284,11 +269,14 @@ footer {
 }
 
 /* Responsive */
+@media (min-width: 601px) {
+  .brief-grid { grid-template-columns: 1fr 1fr; }
+}
+
 @media (max-width: 600px) {
   header .container { flex-direction: column; gap: 0.75rem; }
   nav a { margin-left: 0; margin-right: 1rem; }
   .hero h1 { font-size: 1.5rem; }
-  .ipo-brief-head { flex-direction: column; }
-  .ipo-brief-table > div { grid-template-columns: 1fr; }
-  .ipo-brief-table strong { padding-bottom: 0; }
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .ipo-table td:first-child { width: 80px; }
 }
