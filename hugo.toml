@@ -24,7 +24,7 @@ paginate = 10
     url = "/research/"
     weight = 3
   [[menu.main]]
-    name = "项目"
+    name = "港股简报"
     url = "/projects/"
     weight = 4
   [[menu.main]]

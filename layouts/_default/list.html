@@ -1,12 +1,19 @@
 {{ define "main" }}
 <h1>{{ .Title }}</h1>
-<ul class="post-list">
-  {{ range .Pages }}
-  <li class="post-item">
-    <a href="{{ .Permalink }}">{{ .Title }}</a>
-    <div class="post-meta">{{ .Date.Format "2006-01-02" }}</div>
-    {{ if .Summary }}<div class="post-summary">{{ .Summary | plainify | truncate 120 }}</div>{{ end }}
-  </li>
-  {{ end }}
-</ul>
+{{ if .Content }}
+<div class="article-content">
+  {{ .Content }}
+</div>
+{{ end }}
+{{ if not .Params.hideChildren }}
+  <ul class="post-list">
+    {{ range .Pages }}
+    <li class="post-item">
+      <a href="{{ .Permalink }}">{{ .Title }}</a>
+      <div class="post-meta">{{ .Date.Format "2006-01-02" }}</div>
+      {{ if .Summary }}<div class="post-summary">{{ .Summary | plainify | truncate 120 }}</div>{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+{{ end }}
 {{ end }}
