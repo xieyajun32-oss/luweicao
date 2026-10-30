@@ -1,3 +1,6 @@
+{{ if .IsHome }}
+{{ partial "life.html" . }}
+{{ else }}
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -30,3 +33,5 @@
   </footer>
 </body>
 </html>
+
+{{ end }}
