@@ -9,18 +9,13 @@
   <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
   <meta name="description" content="{{ .Site.Params.description }}">
   <link rel="stylesheet" href="/css/style.css">
-</head>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f5ef;color:#263d34;font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:1px solid #d7ded4;background:white;border-radius:9px;padding:10px 18px;color:inherit}button:hover{background:#e8eee3}.primary{background:#294c3e;color:white}aside{position:fixed;width:240px;height:100vh;background:#edf0e7;padding:38px 24px;border-right:1px solid #dde2d7}h1{font-family:serif;font-size:36px;font-weight:500;letter-spacing:2px}h2{font-size:20px}small,.muted{color:#78877c}nav button{display:block;width:100%;text-align:left;margin:12px 0;border:0;background:transparent}nav a{display:block;text-decoration:none;color:inherit;border-radius:9px;padding:10px 18px;margin:12px 0}nav a:hover{background:#e8eee3}aside{overflow-y:auto}nav button.active{background:#dce5d7}main{max-width:1260px;margin-left:240px;padding:36px 54px}.top{display:flex;justify-content:space-between;align-items:center}.hero{padding:24px 0 34px}.hero p{color:#78877c}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.card{background:#fffefa;border:1px solid #e1e4da;border-radius:16px;padding:26px;margin-bottom:20px}.card p{color:#78877c}.label{font-size:12px;letter-spacing:2px;color:#8b9879}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}textarea{width:100%;min-height:160px;padding:16px;border:1px solid #d9dfd4;border-radius:10px;background:#fdfdf9;color:inherit;resize:vertical}input,select{padding:10px;border:1px solid #d9dfd4;border-radius:8px;max-width:100%;background:white;color:inherit}.field{margin:20px 0}.field label{display:block;margin-bottom:8px}.pill{padding:4px 10px;background:#edf1e8;border-radius:20px;font-size:12px}.entry{padding:18px 0;border-bottom:1px solid #e5e8df;white-space:pre-wrap}.footer{margin-top:35px;font-size:12px;color:#87917f}img{max-width:240px;border-radius:10px}.wide{grid-column:1/-1}@media(max-width:760px){aside{position:static;width:auto;height:auto;padding:18px}nav{display:flex;overflow:auto}nav button,nav a{white-space:nowrap;width:auto;margin:0}aside small{display:none}main{margin:0;padding:22px}.grid{grid-template-columns:1fr}h1{font-size:28px}.top{gap:12px}.card{padding:20px}}
+
+:root{--bg:#f6f5ef;--text:#263d34;--accent:#294c3e;--muted:#78877c;--border:#e1e4da}main>.container{max-width:1000px;background:#fffefa;border:1px solid #e1e4da;border-radius:16px;padding:30px}footer{margin-left:240px}aside nav a{margin-left:0;font-size:15px}main h1{line-height:1.4}@media(max-width:760px){footer{margin-left:0}main>.container{padding:20px}}
+</style></head>
 <body>
-  <header>
-    <div class="container">
-      <a href="/" class="site-title">{{ .Site.Title }}</a>
-      <nav>
-        {{ range .Site.Menus.main }}
-        <a href="{{ .URL }}">{{ .Name }}</a>
-        {{ end }}
-      </nav>
-    </div>
-  </header>
+<aside><div style="font-size:26px">♧ 芦苇草</div><small>人生复利系统 · PERSONAL GROWTH</small><nav><a href="/#首页">◷　首页</a><a href="/#今日记录">✎　今日记录</a><a href="/#本周聚焦">◎　本周聚焦</a><a href="/#五个领域">❀　五个领域</a><a href="/#人生时间轴">↗　人生时间轴</a><a href="/posts/">▤　文章</a><a href="/research/">◈　投研</a><a href="/projects/">▥　港股简报</a><a href="https://hkipo-admin.pages.dev/admin/">⚙　港股后台</a></nav><div class="footer">积累而不内耗<br>进步而不求满分</div></aside>
   <main>
     <div class="container">
       {{ block "main" . }}{{ end }}
