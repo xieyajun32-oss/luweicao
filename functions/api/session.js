@@ -2,7 +2,7 @@ import {configured,configurationIssue,validSession,passwordMatches,issueSession,
 // Best-effort per-isolate throttling, not a distributed rate limit. Use a unique, hard-to-guess password; the minimum is 8 Unicode characters.
 const attempts=new Map();
 export async function onRequest({request,env}){
- if(request.method==='GET')return reply({uiVersion:'stats-domains-notebook-v1',configured:configured(env),configurationIssue:configurationIssue(env),authenticated:await validSession(request,env)});
+ if(request.method==='GET')return reply({uiVersion:'diary-content-actions-v1',configured:configured(env),configurationIssue:configurationIssue(env),authenticated:await validSession(request,env)});
  if(request.method==='DELETE')return reply({authenticated:false},200,{'Set-Cookie':sessionCookie('',0)});
  if(request.method!=='POST')return reply({error:'请求方法不支持'},405);
  if(!configured(env))return reply({error:configurationIssue(env)},503);
