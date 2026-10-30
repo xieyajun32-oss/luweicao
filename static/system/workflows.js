@@ -44,6 +44,9 @@ const unauthenticatedAIRequest=aiRequest;aiRequest=async function(...args){await
 const unauthenticatedReadCloud=readCloud;readCloud=async function(){try{await ensureOwnerLogin();return unauthenticatedReadCloud()}catch(e){$('#cloudStatus').textContent=e.message}};
 const unauthenticatedWriteCloud=writeCloud;writeCloud=async function(){try{await ensureOwnerLogin();return unauthenticatedWriteCloud()}catch(e){$('#cloudStatus').textContent=e.message}};
 async function openOwnerLogin(){const box=$('#ownerSessionStatus');try{await ensureOwnerLogin();box.textContent='私人云端已登录，登录有效期最长 7 天。'}catch(e){box.textContent=e.message}}
-async function logoutOwner(){try{const r=await fetch('/api/session',{method:'DELETE'});if(!r.ok)throw Error('退出未成功，请重试');cloudLoaded=false;cloudETag=null;$('#ownerSessionStatus').textContent='已退出私人云端，本机记录保留。'}catch(e){$('#ownerSessionStatus').textContent=e.message}}
-const authRender=render;render=function(){authRender();if(page!=='设置与记忆')return;const card=document.createElement('div');card.className='card';card.innerHTML='<h2>私人登录</h2><p>独立密码登录，不使用 Zero Trust。密码只在 Cloudflare 服务端验证，不保存到备份或公开代码。修改后台密码会使原登录失效。</p><div class="row"><button onclick="openOwnerLogin()">登录私人空间</button><button onclick="logoutOwner()">退出私人云端</button></div><p id="ownerSessionStatus" role="status"></p>';$('#app').prepend(card)};
+async function logoutOwner(){try{const r=await fetch('/api/session',{method:'DELETE'});if(!r.ok)throw Error('退出未成功，请重试');cloudLoaded=false;cloudETag=null;location.reload()}catch(e){$('#ownerSessionStatus').textContent=e.message}}
+const authRender=render;render=function(){authRender();if(page!=='设置与记忆')return;const card=document.createElement('div');card.className='card';card.innerHTML='<h2>私人登录</h2><p>独立密码登录，不使用 Zero Trust。密码只在 Cloudflare 服务端验证，不保存到备份或公开代码。修改后台密码会使原登录失效。</p><div class="row"><button onclick="openOwnerLogin()">登录私人空间</button><button onclick="logoutOwner()">退出网站</button></div><p id="ownerSessionStatus" role="status"></p>';$('#app').prepend(card)};
 render();
+
+window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
+
