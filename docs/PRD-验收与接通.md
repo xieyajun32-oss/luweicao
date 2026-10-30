@@ -19,16 +19,16 @@
 | 家人隐私 | 服务端仅允许指定 owner，未实现家庭成员分级授权；禁止开启共享访问。 |
 | 提醒 | 沿用既有两项任务，不另建；本轮读取提醒配置，未重新核验调度器运行。 |
 
-## Cloudflare 一次性接通
+## Cloudflare 一次性接通（独立密码方案，替代此前 Access 方案）
 
-使用原 `luweicao` Pages 项目，不另建站，不改域名或已有公开文章。
+使用原 `luweicao` Pages 项目，不开通 Zero Trust，不改域名或已有公开文章。
 
-1. 创建一个禁止公网访问的 R2 bucket，并在 Pages 生产环境绑定为 `PRIVATE_STORE`。不要开启 r2.dev 或自定义公开域名。
-2. 绑定 Workers AI，名称 `AI`。可选 `AI_MODEL`；默认模型须在账号内验证可用。
-3. 为 `/api/*` 配置 Cloudflare Access，仅允许用户本人的邮箱。`pages.dev` 和 `luweicao.net` 都须覆盖；不允许绕过政策。
-4. 在 Pages 服务端环境配置 `ACCESS_TEAM_DOMAIN`、`ACCESS_AUD`、`OWNER_EMAIL`。这些值不写入前端。系统独立验证 Access JWT 签名、issuer、audience、expiry 和 owner。
-5. 重新部署。验证未登录 API 拒绝访问；本人登录后 AI/云存储可用；其他账号被拒绝。不要在此之前导入私人数据。
-6. 同一浏览器导出已有数据，再接通云存储；用两个设备测试保存、读取和并发冲突。验证 AI 保留原意和缺项后才能称为已完成。
+1. 在生产环境 Variables and secrets 添加 Secret：`OWNER_LOGIN_SECRET`，值为密码管理器生成的至少 32 位随机密码。不要用其他账号密码，不放入代码、聊天或备份。服务端长度不足时拒绝启用。
+2. Workers AI 绑定名称 `AI`。由用户此前添加；仍需实际 AI 调用验收。
+3. 创建禁止公网访问的 R2 bucket，在生产环境绑定为 `PRIVATE_STORE`；不要开启 r2.dev 或公开域名。存储未绑定时不会把本地保存说成云端保存。R2 开通与计费仍需单独核实。
+4. 重新部署。在网站“记忆与设置”点击“登录私人空间”输入上述密码。会话最长 7 天；Cookie 使用 Secure、HttpOnly、SameSite=Strict、Host 前缀，接口校验签名、时效、主机及写请求 Origin。更换 Secret 使所有会话失效。退出清除当前浏览器 Cookie，不删除本机已有日记。
+5. 本次登录不需要其他账号或服务。限流为单实例尽力限制，不能称作分布式防暴力破解；必须用足够随机的密码。忘记密码就在 Cloudflare 更换 Secret 并重新部署。
+6. 云端首次同步前导出本地备份，在两个设备验证冲突和持久化。现有公开文章页面和本地数据不会因设置密码自动加密；私人云端接口才由此次登录保护。
 
 Cloudflare AI 与存储可能产生费用；不替用户选择付费套餐或开通付款。
 
