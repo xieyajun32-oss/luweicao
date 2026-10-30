@@ -1,13 +1,13 @@
 baseURL = "https://luweicao.net/"
 languageCode = "zh-cn"
-title = "芦苇草"
+title = "芦苇草人生复利系统"
 defaultContentLanguage = "zh-cn"
 summaryLength = 120
 paginate = 10
 
 [params]
   author = "芦苇草"
-  description = "AI工具 · 港股投研 · 项目管理 · 个人成长"
+  description = "积累而不内耗，进步而不求满分。私人生活记录、长期记忆与复盘空间。"
   dateFormat = "2006-01-02"
 
 [menu]
