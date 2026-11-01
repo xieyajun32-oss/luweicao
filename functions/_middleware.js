@@ -7,7 +7,7 @@ const loginPage=()=>{
 export async function onRequest(ctx){
  const {request,env}=ctx;const url=new URL(request.url);
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return reply({error:'不允许跨站请求'},403);
- if(['GET','HEAD'].includes(request.method)&&['/privacy.html','/terms.html'].includes(url.pathname))return ctx.next();
+ if(['GET','HEAD'].includes(request.method)&&['/privacy.html','/terms.html','/privacy','/terms'].includes(url.pathname))return ctx.next();
  if(url.pathname==='/api/session'||url.pathname==='/api/integrations/oura/callback')return ctx.next();
  if(!configured(env))return new Response('私人网站尚未完成密码设置，暂不开放访问。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
  if(!await validSession(request,env))return url.pathname.startsWith('/api/')?reply({error:'请先输入网站密码登录',loginRequired:true},401):loginPage();
