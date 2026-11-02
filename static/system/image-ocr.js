@@ -1,0 +1,7 @@
+/* Lossless, overlapping image tiles. Originals remain untouched in IndexedDB. */
+(function(root){
+ const version='vision-ocr-v1';
+ function tiles(width,height){if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width*height>50000000)throw Error('图片尺寸过大或无法读取，请使用报告原图');const edge=1400,overlap=100,out=[];for(let y=0;y<height;){const h=Math.min(edge,height-y);for(let x=0;x<width;){const w=Math.min(edge,width-x);out.push({x,y,w,h,key:[x,y,w,h].join(',')});if(x+w>=width)break;x+=w-overlap}if(y+h>=height)break;y+=h-overlap}return out}
+ async function open(blob){let image,dispose;if(typeof createImageBitmap==='function'){image=await createImageBitmap(blob);dispose=()=>image.close()}else{const url=URL.createObjectURL(blob);image=new Image();await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(Error('图片解码失败，请使用 JPEG、PNG 或 WebP 原图'));image.src=url});dispose=()=>URL.revokeObjectURL(url)}const width=image.width||image.naturalWidth,height=image.height||image.naturalHeight;try{const plan=tiles(width,height);return {plan,dispose,async crop(tile){const canvas=document.createElement('canvas');canvas.width=tile.w;canvas.height=tile.h;canvas.getContext('2d').drawImage(image,tile.x,tile.y,tile.w,tile.h,0,0,tile.w,tile.h);return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('无法准备识别图块')),'image/png'))}}}catch(e){dispose();throw e}}
+ root.ReedImageOCR={version,tiles,open};
+})(globalThis);
