@@ -1,0 +1,4 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const s=fs.readFileSync(new URL('../static/system/inbox.js',import.meta.url),'utf8');
+const scope={db:{inbox:{diary:{id:'diary',text:'20261101 晨夕日记\n一、本周三件事\n原文',status:'待整理',analysisError:'Failed to fetch',files:[{id:'photo'}]},device:{id:'device',source:'Oura',text:'20261102 晨夕日记'},note:{id:'note',text:'普通资料'}}},allRecords:()=>({}),parseTemplate:()=>null};vm.createContext(scope);vm.runInContext(s.slice(s.indexOf('const recordsBeforeIntake='),s.indexOf('const domainMatchesBeforeInbox=')),scope);const result=scope.allRecords();assert.deepEqual(Object.keys(result),['2026-11-01']);assert.equal(result['2026-11-01'].raw,scope.db.inbox.diary.text);assert.equal(result['2026-11-01'].diarySourceIds[0],'diary');assert(!scope.db.days);scope.db.inbox.bad={text:'20261301 晨夕日记'};assert.doesNotThrow(()=>scope.allRecords());
+console.log('日记原文在识别失败时仍按标题日期进入时间轴，Oura和普通资料不生成日记，非法日期跳过：通过');
