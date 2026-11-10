@@ -1,0 +1,10 @@
+name = "luweicao-oura-sync"
+main = "index.js"
+compatibility_date = "2026-11-10"
+
+[vars]
+SITE_ORIGIN = "https://luweicao.pages.dev"
+
+[triggers]
+# 00:30 UTC is 08:30 Asia/Shanghai.
+crons = ["30 0 * * *"]
