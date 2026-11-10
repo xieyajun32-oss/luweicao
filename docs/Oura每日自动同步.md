@@ -6,12 +6,11 @@
 
 ## 必需配置
 
-- Pages 项目 `luweicao` 的 Production Secret：`OURA_SYNC_CRON_SECRET`
-- 定时 Worker 的 Secret：`OURA_SYNC_SECRET`
-- 两项 Secret 必须填入同一随机值，建议至少 32 字节；不要放入代码、GitHub 或聊天。
+- 复用 Pages 项目 `luweicao` 已有的 Production Secret：`OWNER_LOGIN_SECRET`，不新增 Pages Secret。
+- 定时 Worker 的 Secret 变量也命名为 `OWNER_LOGIN_SECRET`，填入与网站密码完全相同的值。不要放入代码、GitHub 或聊天。
 - 部署定时 Worker 时使用 `workers/oura-sync/wrangler.toml`；其 cron 为 `30 0 * * *`。
 
-收到正确的 `X-Oura-Sync-Secret` 后，Pages Middleware 只为这个精确的 POST 同步路由跳过网站登录态校验；其他路由仍按私人登录验证。请求值以常量时间比较。
+收到正确的 `X-Owner-Secret` 后，Pages Middleware 只为这个精确的 POST 同步路由跳过网站登录态校验；其他路由仍按私人登录验证。请求值以常量时间比较。复用网站密码会降低密钥隔离：定时 Worker 持有该密码；不要启用请求头日志，也不要在日志中输出环境变量。
 
 ## 运行核对
 
