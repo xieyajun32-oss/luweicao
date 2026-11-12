@@ -24,4 +24,6 @@ assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('btcTier(73877)',cont
 assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('btcTier(80000)',context))),{n:0,label:'80,000 以上'});
 assert.equal(vm.runInContext('btcShares({btcPrice:73877,jinjinMultiple:2})',context),4);
 assert.equal(vm.runInContext('btcShares({btcPrice:79999,jinjinMultiple:2})',context),3);
+assert.equal(vm.runInContext('btcShares({btcPrice:73877,jinjinMultiple:null})',context),4);
+assert.equal(vm.runInContext('btcShares({btcPrice:null,jinjinMultiple:2})',context),null);
 console.log('BTC 投资记录：私人数据库保存/读取、版本冲突保护、输入校验、价格区间和应投份数公式：通过');
