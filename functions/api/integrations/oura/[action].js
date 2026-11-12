@@ -1,4 +1,5 @@
 import {reply} from '../../../../lib/owner-auth.js';
+import {generateHealthReview} from '../../../../lib/health-review.js';
 import {readyDB,saveConnection,loadConnection,seal,unseal} from '../../../../lib/private-db.js';
 const enc=new TextEncoder();const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const paths=["daily_activity","daily_cardiovascular_age","daily_readiness","daily_resilience","daily_sleep","daily_spo2","daily_stress","enhanced_tag","heartrate","personal_info","rest_mode_period","ring_battery_level","ring_configuration","session","sleep","sleep_time","tag","vO2_max","workout"];
@@ -23,7 +24,13 @@ export async function onRequest(ctx){const {env,request,params}=ctx,action=param
   if(previous?.runId!==body.runId)return reply({error:'同步任务已变更，保留当前运行结果'},409);
   const result=body.result;if(!result||!Number.isInteger(result.saved)||!Number.isInteger(result.pages)||!Array.isArray(result.errors)||!Array.isArray(result.types))return reply({error:'同步结果格式无效'},400);
   const errors=result.errors.map(String).slice(0,100).map(s=>s.slice(0,500)),success=errors.length===0;
-  await saveConnection(env,'oura-sync-run',JSON.stringify({...previous,status:success?'success':'partial',finishedAt:now,lastSuccessfulAt:success?now:previous.lastSuccessfulAt,saved:result.saved,pages:result.pages,errors,types:result.types.filter(x=>paths.includes(x.type)).map(x=>({type:x.type,saved:Number(x.saved)||0,success:x.success===true}))}));return reply({recorded:true});
+  const completed={...previous,status:success?'success':'partial',finishedAt:now,lastSuccessfulAt:success?now:previous.lastSuccessfulAt,saved:result.saved,pages:result.pages,errors,types:result.types.filter(x=>paths.includes(x.type)).map(x=>({type:x.type,saved:Number(x.saved)||0,success:x.success===true}))};
+  await saveConnection(env,'oura-sync-run',JSON.stringify(completed));
+  // Generate after all source types finish; opening the website is not required.
+  const reviewDate=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Shanghai'}).format(new Date(previous.scheduledFor));
+  let review;try{const saved=await generateHealthReview(env,reviewDate);review={status:'success',date:reviewDate,generatedAt:saved.generatedAt}}catch(e){review={status:'failed',date:reviewDate,error:e.message}}
+  const current=JSON.parse(await loadConnection(env,'oura-sync-run')||'null');if(current?.runId===body.runId)await saveConnection(env,'oura-sync-run',JSON.stringify({...current,review}));
+  return reply({recorded:true,review});
  }
  const stored=await loadConnection(env,'oura-token');if(!stored)return reply({error:'请先连接 Oura'},409);let token=await unseal(env,stored);
  if(token.expiresAt<Date.now()+60000){const db=await readyDB(env),lock=crypto.randomUUID();const change=await db.prepare('INSERT INTO reed_connections(id,value,updated) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value,updated=excluded.updated WHERE reed_connections.updated < ?').bind('oura-refresh-lock',lock,new Date().toISOString(),new Date(Date.now()-60000).toISOString()).run();if(!change.meta?.changes)return reply({error:'另一同步正在进行，请稍后重试'},409);try{token=await exchange(env,{grant_type:'refresh_token',refresh_token:token.refresh_token});await saveConnection(env,'oura-token',await seal(env,token))}finally{await db.prepare('DELETE FROM reed_connections WHERE id=? AND value=?').bind('oura-refresh-lock',lock).run()}}
