@@ -11,4 +11,6 @@ const clear=await put('2026-11-02',1,{},updated.record.version);assert.equal(cle
 assert.equal((await put('2026-02-30',1,data)).status,400);assert.equal((await put('2026-11-02',3,data)).status,400);
 for(let i=0;i<505;i++){const day=new Date(Date.UTC(2020,0,1+i)).toISOString().slice(0,10);sql.prepare('INSERT INTO reed_checkins VALUES(?,?,?,?,?)').run(day,0,'{}','v'+i,day);}
 const a=await request('GET',{from:'2020-01-01',to:'2021-12-31'});assert.equal(a.records.length,500);assert(a.next);const b=await request('GET',{from:'2020-01-01',to:'2021-12-31',after:a.next});assert.equal(b.records.length,5);assert.equal(new Set([...a.records,...b.records].map(x=>x.day+'|'+x.person)).size,505);
+// Custom project definitions synchronize across devices and permit matching daily values.
+const added=await request('POST',null,{action:'add-project',person:0,name:'瑜伽',group:'其他'});assert.equal(added.status,200);assert(added.verified);assert.equal((await request('GET',{projects:'1'})).projects[0].item,'瑜伽');const customSave=await put('2026-11-04',0,{瑜伽:{done:true,parts:[]}});assert.equal(customSave.status,200);assert.equal((await request('POST',null,{action:'add-project',person:0,name:'瑜伽',group:'其他'})).status,409);assert.equal((await put('2026-11-05',1,{瑜伽:{done:true,parts:[]}})).status,400);
 console.log('打卡：数据库回读、三人隔离、年份查询、分页导出、防覆盖及版本历史、按书名/运动类型汇总、未填时长保留：通过');
