@@ -1,26 +1,14 @@
-import assert from 'node:assert/strict';
-import {default as worker} from '../workers/oura-sync/index.js';
-
-const scheduledTime=Date.parse('2026-11-10T00:30:00.000Z');
-const previousFetch=globalThis.fetch;
-const requests=[];
-globalThis.fetch=async(url,init)=>{
- requests.push({url:String(url),init});
- const body=JSON.parse(init.body);
- if(requests.length===1)return Response.json({items:[{id:'oura:daily_activity:2026-11-09'}],errors:[],continuations:{daily_activity:'cursor-1'}});
- assert.deepEqual(body,{start:'2026-11-03',type:'daily_activity',nextToken:'cursor-1'});
- return Response.json({items:[{id:'oura:daily_activity:2026-11-08'}],errors:[],continuations:{}});
-};
+import assert from 'node:assert/strict';import worker from '../workers/oura-sync/index.js';import fs from 'node:fs';
+const previousFetch=globalThis.fetch,scheduledTime=Date.parse('2026-11-12T00:30:00Z'),env={SITE_ORIGIN:'https://example.test',OWNER_LOGIN_SECRET:'fixture-secret'};
+let mode='success',requests=[];
+globalThis.fetch=async(url,init)=>{const body=JSON.parse(init.body);requests.push(body);assert.equal(init.headers['X-Owner-Secret'],env.OWNER_LOGIN_SECRET);assert.equal(body.start,'2026-11-05');if(body.command)return Response.json({recorded:true});assert(body.type,'each data request must specify one data type');if(mode==='failure'&&body.type==='daily_sleep')return Response.json({items:[],errors:['daily_sleep:503'],continuations:{}});if(mode==='budget'&&body.type==='heartrate')return Response.json({items:[],errors:[],continuations:{heartrate:'cursor-'+requests.length}});if(mode==='cursor'&&body.type==='sleep')return Response.json({items:[],errors:[],continuations:{sleep:'same'}});if(body.type==='sleep'&&!body.nextToken)return Response.json({items:[{id:'night'}],errors:[],continuations:{sleep:'next'}});return Response.json({items:[],errors:[],continuations:{}})};
 try{
- const result=await worker.scheduled({scheduledTime},{SITE_ORIGIN:'https://luweicao.pages.dev',OWNER_LOGIN_SECRET:'test-secret'});
- assert.equal(result,undefined);
- assert.equal(requests.length,2);
- assert.equal(requests[0].url,'https://luweicao.pages.dev/api/integrations/oura/sync');
- assert.equal(requests[0].init.headers['X-Owner-Secret'],'test-secret');
- assert.equal(JSON.parse(requests[0].init.body).start,'2026-11-03');
- assert.equal(requests[1].init.headers['X-Owner-Secret'],'test-secret');
- const status=await worker.fetch();
- assert.deepEqual(await status.json(),{service:'luweicao-oura-sync',schedule:'08:30 Asia/Shanghai'});
- await assert.rejects(worker.scheduled({scheduledTime},{SITE_ORIGIN:'https://luweicao.pages.dev'}),/Missing SITE_ORIGIN or OWNER_LOGIN_SECRET/);
- console.log('Oura Cron Worker：每日触发、7 日回补、分页续读、密钥传递、配置缺失保护：通过');
+ await worker.scheduled({scheduledTime},env);assert.equal(requests[0].command,'run-start');assert.equal(requests.at(-1).command,'run-finish');assert.equal(requests.at(-1).result.types.length,19);assert.equal(requests.at(-1).result.saved,1);assert.deepEqual(requests.filter(x=>x.type).slice(0,3).map(x=>x.type),['daily_readiness','daily_sleep','sleep']);assert(requests.some(x=>x.type==='sleep'&&x.nextToken==='next'));assert(requests.length<50);
+ requests=[];mode='failure';await assert.rejects(worker.scheduled({scheduledTime},env),/core data sync failed/);assert(requests.some(x=>x.type==='daily_activity'),'other core types continue after one failure');assert(requests.at(-1).result.errors.includes('daily_sleep:503'));assert.equal(requests.at(-1).command,'run-finish');
+ requests=[];mode='cursor';await assert.rejects(worker.scheduled({scheduledTime},env),/cursor repeated/);assert(requests.length<50);assert.equal(requests.at(-1).command,'run-finish');
+ requests=[];mode='budget';await worker.scheduled({scheduledTime},env);assert(requests.length<=48);assert.equal(requests.at(-1).command,'run-finish');assert(requests.at(-1).result.errors.some(x=>x.includes('budget')));
+ const config=fs.readFileSync(new URL('../workers/oura-sync/wrangler.toml',import.meta.url),'utf8');assert(config.includes('keep_vars = true'));assert(config.includes('crons = ["30 0 * * *"]'));
+ await assert.rejects(worker.scheduled({scheduledTime},{SITE_ORIGIN:'https://example.test'}),/Missing/);
+ const status=await(await worker.fetch(new Request('https://example.test'),env)).json();assert.equal(status.schedule,'08:30 Asia/Shanghai');assert.equal(status.configured,true);assert(!JSON.stringify(status).includes(env.OWNER_LOGIN_SECRET));
+ console.log('Oura 定时任务：逐类读取、核心优先、分页、单类失败继续、失败回执和失败事件、请求限额、密钥不公开：通过');
 }finally{globalThis.fetch=previousFetch}
