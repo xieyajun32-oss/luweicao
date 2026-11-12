@@ -9,7 +9,7 @@ const scope={db:{inbox:{
  note:{id:'note',text:'普通资料',date:'2026-11-09',status:'已归档',domains:['事业']},
  invalid:{id:'invalid',text:'20261301 所思所想',date:'2026-11-08',status:'已归档'}
 }},allRecords:()=>({}),parseTemplate:()=>null};vm.createContext(scope);
-vm.runInContext(s.slice(s.indexOf('function intakeTimelineText'),s.indexOf('const domainMatchesBeforeInbox=')),scope);
+const helpers=s.slice(s.indexOf('function intakeTimelineText'),s.indexOf('function intakeAnalysisHTML'));const records=s.slice(s.indexOf('const recordsBeforeIntake='),s.indexOf('const domainMatchesBeforeInbox='));vm.runInContext(helpers+records,scope);
 const result=scope.allRecords();assert.deepEqual(Object.keys(result).sort(),['2026-10-26','2026-11-01','2026-11-10','2026-11-11']);
 assert.equal(result['2026-10-26'].raw,'20261026 所思所想\\n一次反思');
 assert.equal(result['2026-11-11'].recordType,'资料记录');assert(s.includes("const intakeDomains=['健康','财富','事业','家庭','认知','人生时间轴']"));assert(s.includes("if(intakeTimelineWorkout(x)||intakeDatedReflection(x))"));assert(s.includes("d==='人生时间轴'&&intakeTimelineSuggested(x)"));
