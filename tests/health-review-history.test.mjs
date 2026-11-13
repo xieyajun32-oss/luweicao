@@ -3,7 +3,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {readyDB,saveConnection} from '../lib/private-db.js';
 import {listHealthReviewHistory,readHealthReview,generateHealthReview,shanghaiDate} from '../lib/health-review.js';
 import {onRequestGet} from '../functions/api/health/review.js';
-const sql=new DatabaseSync(':memory:');function prepare(query){let args=[];return {bind(...values){args=values;return this},async run(){return {meta:{changes:Number(sql.prepare(query).run(...args).changes)}}},async all(){return {results:sql.prepare(query).all(...args)}},async first(){return sql.prepare(query).get(...args)||null}}}
+const sql=new DatabaseSync(':memory:');function prepare(query){for(const m of query.matchAll(/GLOB '([^']*)'/g))assert(m[1].length<=50,'D1 GLOB pattern length limit');let args=[];return {bind(...values){args=values;return this},async run(){return {meta:{changes:Number(sql.prepare(query).run(...args).changes)}}},async all(){return {results:sql.prepare(query).all(...args)}},async first(){return sql.prepare(query).get(...args)||null}}}
 const env={PRIVATE_DB:{prepare,async batch(q){return Promise.all(q.map(x=>x.run()))}}},today=shanghaiDate(),day=n=>new Date(Date.parse(today+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);await readyDB(env);
 for(let i=1;i<=75;i++)await saveConnection(env,'health-review:'+day(i),JSON.stringify(i===2?{date:day(i),summary:'旧格式原总结',suggestions:[{text:'旧版保存建议'}],generatedAt:'旧版保存时间'}:{schemaVersion:'recovery-insights-v1',date:day(i),summary:'当时保存的总结 '+i,insights:[],generatedAt:day(i)+'T00:31:00Z'}));
 await saveConnection(env,'health-review:'+today,JSON.stringify({schemaVersion:'recovery-insights-v1',date:today,summary:'今日总结',insights:[]}));
