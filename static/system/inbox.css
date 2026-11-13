@@ -8,3 +8,5 @@
 
 /* Daily recovery insights: scoped to the existing health summary. */
 .health-insight{padding:12px 0;border-top:1px solid #e1e7db}.health-insight h4{margin:0 0 7px;font-size:15px}.health-insight p{margin:6px 0;line-height:1.75;font-size:13px}.health-insight details{font-size:11px;color:#728173}.health-insight details a{color:inherit}.health-review-important{color:#ad3028!important;font-weight:600}.health-review-summary{font-size:15px;margin:12px 0;line-height:1.75}.health-review-limits{font-size:12px;color:#758174;margin:12px 0}.health-review-limits p{margin:6px 0}
+
+.health-review-history{margin-top:18px;border-top:1px solid #e1e7db;padding-top:12px}.health-review-history>summary,.health-review-archive>summary{cursor:pointer;font-weight:600;padding:8px 0}.health-review-archive{border-top:1px solid #edf0e8;margin-top:6px}.health-review-archive>div{padding:4px 0 12px}.health-review-archive .health-review-summary{font-size:14px}
