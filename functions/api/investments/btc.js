@@ -5,12 +5,12 @@ const recordKey='btc-investment-plan';
 const validDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value);
 const optionalNumber=value=>value===null||value===''||value===undefined||Number.isFinite(Number(value))&&Number(value)>=0&&Number(value)<=1000000000;
 function validPlan(plan){
- if(!plan||typeof plan!=='object'||!Array.isArray(plan.entries)||plan.entries.length>2000)return false;
+ if(!plan||typeof plan!=='object'||!Array.isArray(plan.entries)||(plan.specialEntries!==undefined&&!Array.isArray(plan.specialEntries))||plan.entries.length+(plan.specialEntries?.length||0)>2000)return false;
  const ids=new Set();
- return plan.entries.every(row=>{
+ return [...plan.entries,...(plan.specialEntries||[])].every(row=>{
   if(!row||typeof row!=='object'||typeof row.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(row.id)||ids.has(row.id)||!validDate(row.date)||typeof row.executed!=='boolean')return false;
   ids.add(row.id);
-  return ['btcPrice','jinjinMultiple','executionPrice','amount'].every(key=>optionalNumber(row[key]))&&typeof (row.note??'')==='string'&&(row.note??'').length<=500;
+  return ['btcPrice','jinjinMultiple','ma200Shares','executionPrice','amount'].every(key=>optionalNumber(row[key]))&&typeof (row.note??'')==='string'&&(row.note??'').length<=500&&['condition','strategy'].every(key=>row[key]===undefined||typeof row[key]==='string'&&row[key].length<=500);
  });
 }
 
