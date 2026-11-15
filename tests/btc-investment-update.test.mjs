@@ -32,3 +32,5 @@ const sameDay=JSON.parse(vm.runInContext('JSON.stringify(btcStatistics())',ctx))
 console.log('统计口径：同日两笔只计一天、未执行不计入、份数与金额累加、均价使用成交额和成交价自动估算的BTC数量：通过');
 
 vm.runInContext("btcPlan.entries[1].executionPrice=null",ctx);assert.equal(vm.runInContext('btcStatistics().average',ctx),null,'incomplete executed record must not produce partial average');vm.runInContext("btcPlan.entries[1].executionPrice=0",ctx);assert.equal(vm.runInContext('btcStatistics().average',ctx),null,'zero price never divides');
+
+const funded=structuredClone(plan);funded.specialEntries[0].fundingSource='额外资金';const fundedSaved=await call('PUT',{plan:funded,expectedVersion:(await call('GET')).version});assert.equal(fundedSaved.verified,true);assert.deepEqual((await call('GET')).plan,funded);funded.specialEntries[0].fundingSource='unrecognized';assert.equal((await call('PUT',{plan:funded,expectedVersion:fundedSaved.version})).status,400);assert.equal((await call('GET')).plan.specialEntries[0].fundingSource,'额外资金');console.log('资金口径：旧记录无需迁移、额外资金保存回读、错误枚举拒绝且原记录保留：通过');

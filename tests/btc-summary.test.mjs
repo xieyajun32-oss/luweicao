@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import vm from 'node:vm';
+const source=await fs.readFile(new URL('../static/system/btc.js',import.meta.url),'utf8');
+const ctx=vm.createContext({window:{addEventListener(){}},render(){},document:{getElementById(){return null}},esc:String});vm.runInContext(source,ctx);
+const daily={id:'daily',date:'2026-11-15',btcPrice:73877,jinjinMultiple:2,ma200Shares:3,executionPrice:50000,amount:1000,executed:true,note:'keep this'};
+const special={id:'special',date:'2026-11-15',executionPrice:40000,amount:2000,executed:true,strategy:'special original',note:'keep special'};
+const plan={entries:[daily,{...daily,id:'pending',executed:false,amount:99999}],specialEntries:[special,{...special,id:'extra',fundingSource:'额外资金',executionPrice:20000,amount:5000},{...special,id:'pending-special',executed:false,amount:99999}],unrelated:{preserve:true}};
+vm.runInContext('btcPlan='+JSON.stringify(plan)+';btcLoaded=true',ctx);
+const get=()=>JSON.parse(vm.runInContext('JSON.stringify(btcInvestmentTotals())',ctx));let t=get();
+assert.equal(t.budget,100000);assert.equal(t.principal.amount,3000);assert.equal(t.principal.quantity,0.07);assert.equal(t.position,3);assert(Math.abs(t.principal.average-3000/0.07)<1e-8);assert.equal(t.extra.amount,5000);assert.equal(t.extra.quantity,0.25);assert.equal(t.extra.average,20000);
+const dca=JSON.parse(vm.runInContext('JSON.stringify(btcStatistics())',ctx));assert.equal(dca.days,1);assert.equal(dca.shares,7);assert.equal(dca.amount,1000);assert.equal(dca.average,50000);
+assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(btcPlan)',ctx)),plan,'derivation never changes records, amounts or funding labels');
+vm.runInContext("btcPlan.specialEntries[0].executionPrice=null",ctx);assert.equal(get().principal.average,null);assert.equal(get().position,3);assert.equal(get().extra.average,20000);
+vm.runInContext("btcPlan.specialEntries[0].executed=false",ctx);assert.equal(get().principal.average,50000);assert.equal(get().position,1);
+vm.runInContext("btcPlan.entries[0].amount=150000",ctx);assert.equal(get().position,150,'do not hide over-budget investment by clamping to 100%');
+vm.runInContext('btcPlan={entries:[],specialEntries:[]}',ctx);t=get();assert.equal(t.position,0);assert.equal(t.principal.average,null);assert.equal(t.extra.count,0);
+console.log('BTC总览：每日与特殊已执行记录合并、按十万美元本金计算、额外资金单列、缺失成交价不估算、未执行排除、零记录与旧字段保留：通过');

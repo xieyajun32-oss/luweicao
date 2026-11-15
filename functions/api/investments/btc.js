@@ -10,7 +10,7 @@ function validPlan(plan){
  return [...plan.entries,...(plan.specialEntries||[])].every(row=>{
   if(!row||typeof row!=='object'||typeof row.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(row.id)||ids.has(row.id)||!validDate(row.date)||typeof row.executed!=='boolean')return false;
   ids.add(row.id);
-  return ['btcPrice','jinjinMultiple','ma200Shares','executionPrice','amount'].every(key=>optionalNumber(row[key]))&&typeof (row.note??'')==='string'&&(row.note??'').length<=500&&['condition','strategy'].every(key=>row[key]===undefined||typeof row[key]==='string'&&row[key].length<=500);
+  return ['btcPrice','jinjinMultiple','ma200Shares','executionPrice','amount'].every(key=>optionalNumber(row[key]))&&typeof (row.note??'')==='string'&&(row.note??'').length<=500&&['condition','strategy'].every(key=>row[key]===undefined||typeof row[key]==='string'&&row[key].length<=500)&&(row.fundingSource===undefined||['定投资金','额外资金'].includes(row.fundingSource));
  });
 }
 
