@@ -1,5 +1,6 @@
 import {reply} from '../../../../lib/owner-auth.js';
 import {generateHealthReview} from '../../../../lib/health-review.js';
+import {generateWeeklyReview} from '../../../../lib/weekly-review.js';
 import {readyDB,saveConnection,loadConnection,seal,unseal} from '../../../../lib/private-db.js';
 const enc=new TextEncoder();const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const paths=["daily_activity","daily_cardiovascular_age","daily_readiness","daily_resilience","daily_sleep","daily_spo2","daily_stress","enhanced_tag","heartrate","personal_info","rest_mode_period","ring_battery_level","ring_configuration","session","sleep","sleep_time","tag","vO2_max","workout"];
@@ -7,6 +8,8 @@ function configured(env){return !!(env.OURA_CLIENT_ID&&env.OURA_CLIENT_SECRET&&e
 async function exchange(env,params){const r=await fetch('https://api.ouraring.com/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'LuweicaoPersonal/1.0'},body:new URLSearchParams({...params,client_id:env.OURA_CLIENT_ID,client_secret:env.OURA_CLIENT_SECRET})});if(!r.ok)throw Error('Oura 授权未完成或已过期，请重新连接');const t=await r.json();if(!t.access_token||!t.refresh_token)throw Error('Oura 未返回完整授权');return {...t,expiresAt:Date.now()+Number(t.expires_in)*1000}}
 export async function onRequest(ctx){const {env,request,params}=ctx,action=params.action,url=new URL(request.url);try{
  if(action==='status'&&request.method==='GET'){const connected=env.PRIVATE_DB?!!await loadConnection(env,'oura-token'):false;const sync=env.PRIVATE_DB?JSON.parse(await loadConnection(env,'oura-sync-run')||'null'):null,freshness=env.PRIVATE_DB?(await(await readyDB(env)).prepare("SELECT json_extract(payload,'$.sourceType') AS type,MAX(json_extract(payload,'$.date')) AS latestDate,MAX(json_extract(payload,'$.observedAt')) AS readAt FROM reed_inbox WHERE id LIKE 'oura:%' GROUP BY json_extract(payload,'$.sourceType')").all()).results||[]:[];return reply({configured:configured(env),connected,dataTypes:paths,authorizationMode:'all_available',schedule:'08:30 Asia/Shanghai',sync,freshness})}
+ // The existing authenticated owner Cron channel also creates the weekly report; no new credential or public route is introduced.
+ if(action==='sync'&&request.method==='POST'){const command=await request.clone().json().catch(()=>({}));if(command.command==='weekly-review'){const report=await generateWeeklyReview(env,command.week,{trigger:'scheduled',scheduledFor:command.scheduledFor||null});return reply({report,verified:report.verified===true||report.cached===true})}}
  if(!configured(env))return reply({error:'请先配置 PRIVATE_DB、OURA_CLIENT_ID 和 OURA_CLIENT_SECRET'},503);
  if(action==='start'&&request.method==='GET'){
  const state=crypto.randomUUID(),verifier=b64(crypto.getRandomValues(new Uint8Array(48))),challenge=b64(await crypto.subtle.digest('SHA-256',enc.encode(verifier))),callback=url.origin+'/api/integrations/oura/callback';

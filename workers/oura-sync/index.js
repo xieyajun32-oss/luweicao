@@ -26,7 +26,13 @@ async function syncAll(env,scheduledTime){
  if(types.some(x=>CORE_TYPES.has(x.type)&&!x.success))throw Error("Oura core data sync failed: "+errors.join("; "));
  return {runId,start,saved,pages,errors,types};
 }
+async function weeklyReport(env,time){
+ const local=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Shanghai'}).format(new Date(time)),date=new Date(local+'T00:00:00Z');if(date.getUTCDay()!==1)return;
+ if(!env.SITE_ORIGIN||!env.OWNER_LOGIN_SECRET)throw Error('Missing SITE_ORIGIN or OWNER_LOGIN_SECRET');
+ const week=new Date(+date-7*86400000).toISOString().slice(0,10),response=await fetch(env.SITE_ORIGIN.replace(/\/$/,'')+'/api/integrations/oura/sync',{method:'POST',headers:{'Content-Type':'application/json','X-Owner-Secret':env.OWNER_LOGIN_SECRET},body:JSON.stringify({command:'weekly-review',week,scheduledFor:new Date(time).toISOString()})});
+ const out=await response.json();if(!response.ok||out.verified!==true)throw Error(out.error||'Weekly report was not verified');console.log(JSON.stringify({event:'weekly_review_saved',week}));
+}
 export default {
- async fetch(request,env){return json({service:"luweicao-oura-sync",schedule,configured:!!(env?.SITE_ORIGIN&&env?.OWNER_LOGIN_SECRET),version:"per-type-sync-v2"})},
- async scheduled(controller,env){try{await syncAll(env,controller.scheduledTime)}catch(e){console.error(JSON.stringify({event:"oura_sync_failed",error:e.message}));throw e}}
+ async fetch(request,env){return json({service:"luweicao-oura-sync",schedule,weeklySchedule:'Monday 08:30 Asia/Shanghai',configured:!!(env?.SITE_ORIGIN&&env?.OWNER_LOGIN_SECRET),version:"per-type-sync-and-weekly-v3"})},
+ async scheduled(controller,env){const results=[];for(const task of [syncAll,weeklyReport]){try{results.push({status:'fulfilled',value:await task(env,controller.scheduledTime)})}catch(reason){results.push({status:'rejected',reason})}}let failure;results.forEach((result,index)=>{if(result.status==='rejected'){console.error(JSON.stringify({event:index?'weekly_review_failed':'oura_sync_failed',error:result.reason.message}));failure??=result.reason}});if(failure)throw failure}
 };
