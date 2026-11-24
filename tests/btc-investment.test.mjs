@@ -18,7 +18,7 @@ const changed={entries:[{...plan.entries[0],executed:false}]};assert.equal((awai
 assert.equal((await call('PUT',{plan:changed,expectedVersion:saved.version})).verified,true);
 
 const source=await readFile(new URL('../static/system/btc.js',import.meta.url),'utf8');
-const context=vm.createContext({page:'五个领域',activeDomain:0,render(){},document:{getElementById(){return null},querySelectorAll(){return[]}},fetch:async()=>{throw Error('not used')},esc:String,crypto:{randomUUID:()=> 'test-id'}});
+const context=vm.createContext({window:{addEventListener(){}},page:'五个领域',activeDomain:0,render(){},document:{getElementById(){return null},querySelectorAll(){return[]}},fetch:async()=>{throw Error('not used')},esc:String,crypto:{randomUUID:()=> 'test-id'}});
 vm.runInContext(source,context);
 assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('btcTier(73877)',context))),{n:2,label:'72,500–75,000'});
 assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('btcTier(80000)',context))),{n:0,label:'80,000 以上'});
@@ -27,3 +27,4 @@ assert.equal(vm.runInContext('btcShares({btcPrice:79999,jinjinMultiple:2})',cont
 assert.equal(vm.runInContext('btcShares({btcPrice:73877,jinjinMultiple:null})',context),4);
 assert.equal(vm.runInContext('btcShares({btcPrice:null,jinjinMultiple:2})',context),null);
 console.log('BTC 投资记录：私人数据库保存/读取、版本冲突保护、输入校验、价格区间和应投份数公式：通过');
+

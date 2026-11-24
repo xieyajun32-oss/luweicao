@@ -19,7 +19,7 @@ assert.deepEqual((await call('GET')).plan,plan,'failed saves preserve all previo
 console.log('BTC 接口：旧记录兼容、MA200与特殊情况保存回读、原字段保留、输入校验、冲突不覆盖：通过');
 const source=await fs.readFile(new URL('../static/system/btc.js',import.meta.url),'utf8');
 let release;const bodies=[];
-const ctx=vm.createContext({window:{addEventListener(){}},render(){},document:{getElementById(){return null},querySelectorAll(){return[]}},esc:String,fetch:async(url,init)=>{const body=JSON.parse(init.body);bodies.push(body);if(bodies.length===1)await new Promise(r=>release=r);return{ok:true,json:async()=>({version:'v'+bodies.length,verified:true})}}});
+const ctx=vm.createContext({setTimeout,clearTimeout,Date,window:{addEventListener(){}},render(){},document:{getElementById(){return null},querySelectorAll(){return[]}},esc:String,fetch:async(url,init)=>{const body=JSON.parse(init.body);bodies.push(body);if(bodies.length===1)await new Promise(r=>release=r);return{ok:true,json:async()=>({version:'v'+bodies.length,verified:true})}}});
 vm.runInContext(source,ctx);vm.runInContext(`btcLoaded=true;btcVersion='v0';btcPlan=${JSON.stringify(oldPlan)}`,ctx);
 const saving=vm.runInContext('btcSave()',ctx);vm.runInContext("btcPlan.entries[0].note='后一次编辑';btcPlan.entries[0].ma200Shares=3;btcSave()",ctx);release();await saving;
 assert.equal(bodies.length,2);assert.equal(bodies[0].plan.entries[0].note,'既有交易原件');assert.equal(bodies[1].plan.entries[0].note,'后一次编辑');assert.equal(bodies[1].expectedVersion,'v1');assert.equal(bodies[1].plan.entries[0].ma200Shares,3);assert.deepEqual(bodies[1].plan.otherOriginalData,{retained:true});
@@ -34,3 +34,4 @@ console.log('统计口径：同日两笔只计一天、未执行不计入、份�
 vm.runInContext("btcPlan.entries[1].executionPrice=null",ctx);assert.equal(vm.runInContext('btcStatistics().average',ctx),null,'incomplete executed record must not produce partial average');vm.runInContext("btcPlan.entries[1].executionPrice=0",ctx);assert.equal(vm.runInContext('btcStatistics().average',ctx),null,'zero price never divides');
 
 const funded=structuredClone(plan);funded.specialEntries[0].fundingSource='额外资金';const fundedSaved=await call('PUT',{plan:funded,expectedVersion:(await call('GET')).version});assert.equal(fundedSaved.verified,true);assert.deepEqual((await call('GET')).plan,funded);funded.specialEntries[0].fundingSource='unrecognized';assert.equal((await call('PUT',{plan:funded,expectedVersion:fundedSaved.version})).status,400);assert.equal((await call('GET')).plan.specialEntries[0].fundingSource,'额外资金');console.log('资金口径：旧记录无需迁移、额外资金保存回读、错误枚举拒绝且原记录保留：通过');
+
