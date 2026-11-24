@@ -1,0 +1,17 @@
+/* Scoped material inbox and reading notebook; other domains retain their layout. */
+.intake-layout.material-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.material-layout>.card{align-self:start;min-width:0;margin:0}.material-layout textarea{min-height:180px}.material-layout .intake-card-title{flex-wrap:wrap}
+.material-history-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}.material-record{min-width:0;border:1px solid #e1e4da;border-radius:10px;padding:12px;background:#fffefa}
+.material-record-title{display:block;padding:0;width:100%;border:0;background:transparent;text-align:left;white-space:normal;overflow-wrap:anywhere;font-weight:600}
+.material-record p{margin:6px 0;font-size:13px}.material-record .material-meta{font-size:12px;color:#65766b}.material-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.material-actions button{padding:6px 10px;font-size:13px}
+.material-danger{color:#a5372c}.material-history-more{margin-top:12px}.material-trash{margin-top:12px}.material-trash summary{cursor:pointer;padding:8px 0}
+.material-editor{margin:14px 0;padding:16px;background:#f5f7f0;border:1px solid #d7dfd1;border-radius:12px}.material-editor label{display:grid;gap:6px;margin-bottom:12px}.material-editor textarea{min-height:220px}.material-editor .material-notes-input{min-height:100px}.material-editor input{width:100%}
+.material-message{white-space:pre-wrap;color:#385746}.material-reading-check{display:flex;gap:8px;align-items:center;margin:12px 0}.material-reading-check input{width:auto}
+.reading-notebook{min-width:0}.reading-heading{display:flex;gap:12px;align-items:start;justify-content:space-between;flex-wrap:wrap}.reading-heading h2{margin:0}.reading-heading p{margin:7px 0}
+.reading-notebook .reading-entries{display:grid;gap:10px;margin-top:14px}.reading-entry{min-width:0;border:1px solid #e1e4da;border-radius:10px;padding:14px}.reading-entry header{display:flex;align-items:start;justify-content:space-between;gap:12px}.reading-entry h3{margin:0;overflow-wrap:anywhere}.reading-entry small{display:block;color:#65766b;margin-top:5px}.reading-entry header>button{flex-shrink:0}
+.reading-body{margin-top:16px}.reading-prose{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}.reading-notes{padding:12px;background:#edf2e8;border-radius:8px;margin-top:14px}.reading-picker{margin-top:14px}.reading-picker>summary{cursor:pointer;padding:10px 0}.reading-picker .material-record{margin:8px 0}.reading-filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.reading-filters input[type=search]{flex:1;min-width:160px}.material-status-details{margin-top:8px;font-size:12px}.material-status-details summary{cursor:pointer}.material-attachment{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+@media(max-width:1000px){.intake-layout.material-layout{grid-template-columns:1fr}.reading-entry header{align-items:center}}
+
+.material-compose-column{min-width:0}.material-compose-column>.card{margin-bottom:0}
+
+.material-compose-column>#intakePanel:empty{display:none}@media(max-width:700px){.material-history-list{grid-template-columns:minmax(0,1fr)}}
